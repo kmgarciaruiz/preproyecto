@@ -1,15 +1,62 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
+#clear all
+rm(list = ls())
 
+#Directorio de rodrigo
+setwd("~/Dropbox/Proyecto Química/Preproyecto")
+
+#Librerías de R
+library(readxl)
 library(shiny)
 library(shinyWidgets)
+library(stringr)
 
+#Funciones nuestras
+source("r/Graficas.R")
+source("r/Reduce_Database.R")
+
+#Lectura de la base
+mybase <- as.data.frame(read_xlsx("bases/datos_pi_2006_2014_paraKarl.xlsx"))
+
+#Formateo del último semestre inscrito
+#TODO AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
+usem_min <- min(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
+usem_max <- max(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
+mybase[,"ULT_ORD"] <- paste0(substr(mybase[,"ULT_ORD"], 1, 4),"-",
+                             substr(mybase[,"ULT_ORD"], 5, 5))
+
+#Base como global
+mybase <<- mybase
+
+#Opciones de semestre
+semestres_opciones <- c()
+for (i in usem_min:usem_max){
+  semestres_opciones <- c(semestres_opciones, paste0(i, "-", c(1,2)))  
+}
+semestres_opciones <<- semestres_opciones
+
+#Opciones de carrera 
+carrera_opciones   <<- unique(mybase[,"CARRERA"])
+
+#Opciones de ingreso
+ingreso_opciones   <<- unique(mybase[,"FORMA_INGRESO"])
+
+#Mínimo y máximo de generación
+mingen  <- min(as.numeric(mybase[,"GENERACION"]))
+maxgen  <- max(as.numeric(mybase[,"GENERACION"]))
+
+#Mínimo y máximo de examen diagnóstico
+mindiag <- min(as.numeric(mybase[,"PTOS_EX_DIAG"]))
+maxdiag <- max(as.numeric(mybase[,"PTOS_EX_DIAG"]))
+
+#Mínimo y máximo de promedio
+minprom <- min(as.numeric(mybase[,"PROMEDIO"]))
+maxprom <- max(as.numeric(mybase[,"PROMEDIO"]))
+
+#Mínimo y máximo de semestres cursados
+minsem  <- min(as.numeric(mybase[,"SEM_CURSADOS"]))
+maxsem  <- max(as.numeric(mybase[,"SEM_CURSADOS"]))
+
+#Opciones de variables a graficar
 tchoices <- c("Forma Ingreso", "Carrera", 
               "Generación", "Examen Diagnóstico", 
               "Promedio carrera", "Avance (%)", 
@@ -27,42 +74,34 @@ shinyUI(fluidPage(
         searchInput("cuenta", "Cuenta", value = "", placeholder = "Busca clave de alumno",
                     btnSearch = NULL, btnReset = NULL, resetValue = "", width = "100%"),
         selectizeInput('forma_ingreso', 'Forma Ingreso', 
-                       choices = c("PASE REGLAMENTADO", "CONCURSO FEBRERO", "SIN INFORMACIÓN",
-                                   "CONCURSO JUNIO"), multiple = TRUE),
+                       choices = ingreso_opciones, multiple = TRUE),
         selectizeInput('carrera', 'Carrera', 
-                       choices = c("21.- Ingeniería Química", 
-                                   "22.- Ingeniería Química Metalúrgica", 
-                                   "23.- Química",
-                                   "24.- Química de Alimentos",
-                                   "25.- Química Farmacéutica Biológica"), multiple = TRUE),
+                       choices = carrera_opciones, multiple = TRUE),
         column(6,
           sliderInput("generacion", "Generación:",
-                      min = 2006, max = 2019,
-                      value = c(2006,2019), step = 1, sep = ""),
+                      min = mingen, 
+                      max = maxgen,
+                      value = c(mingen, maxgen), step = 1, sep = ""),
           sliderInput("examendiag", "Examen Diagnóstico:",
-                      min = 0, max = 150,
-                      value = c(0,150), step = 1),
+                      min = mindiag, 
+                      max = maxdiag,
+                      value = c(mindiag, maxdiag), step = 1),
           sliderInput("promedio", "Promedio carrera",
-                      min = 0, max = 10,
-                      value = c(0,10), step = 0.01)
+                      min = minprom, 
+                      max = maxprom,
+                      value = c(minprom, maxprom), step = 0.01)
         ),
         column(6,
           sliderInput("avance", "Avance (%)",
                       min = 0, max = 100,
                       value = c(0,100), step = 0.01),
           sliderTextInput("uinscrito", "Último Inscrito", 
-                      choices = c("2006-1", "2006-2", "2007-1", "2007-1",
-                                  "2008-1", "2008-2", "2009-1", "2009-2",
-                                  "2010-1", "2010-2", "2011-1", "2011-2",
-                                  "2012-1", "2012-2", "2013-1", "2013-2",
-                                  "2014-1", "2014-2", "2015-1", "2015-2",
-                                  "2016-1", "2016-2", "2017-1", "2017-2",
-                                  "2018-1", "2018-2", "2019-1", "2019-2"
-                                  ),
-                      selected = c("2006-1", "2019-2"), grid = TRUE),
+                      choices = semestres_opciones,
+                      selected = c(semestres_opciones[1], 
+                                   semestres_opciones[length(semestres_opciones)]), grid = TRUE),
           sliderInput("semestres_cursados", "Semestres cursados",
-                      min = 0, max = 20,
-                      value = c(0,20), step = 1)
+                      min = minsem, max = maxsem,
+                      value = c(minsem, maxsem), step = 1)
         )),
         wellPanel(
           div(style="display:inline-block;width:100%;text-align: center;",

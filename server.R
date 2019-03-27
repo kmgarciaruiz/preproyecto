@@ -9,26 +9,53 @@
 
 library(shiny)
 library(shinyWidgets)
+library(stringr)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-   
+  
   output$myplot <- renderPlot({
     
     # draw the histogram with the specified number of bins
-    hist(rnorm(100), col = 'darkgray', border = 'white')
+    hist(mybase$PROMEDIO, col = 'darkgray', border = 'white')
     
   })
   
   output$statistics <- renderText({
-    mysummary <- summary(rnorm(100))
-    desvest   <- sd(rnorm(100))
-    mysummary <- c(mysummary, desvest)
-    names(mysummary) <- c("Min      ", "25%      ", "Mediana  ", "Media    ", 
-                          "75%      ", "Máx      ", "Desv.Est.")
-    mytext <- ""
-    for (i in 1:length(mysummary)){
-      mytext <- paste(mytext,"\n",names(mysummary)[i], "=", mysummary[i])
+    
+    generacion <<- input$generacion
+    examendiag <<- input$examendiag
+    avance     <<- input$avance
+    uinscrito  <<- input$uinscrito
+    promedio   <<- input$promedio
+    semestres_cursados <<- input$semestres_cursados
+    forma_ingreso <<- input$forma_ingreso
+    carrera <<- input$carrera
+    cuenta <<- input$cuenta
+    # 
+    # nuevabase <- simplify_database(mybase, generacion, examendiag,
+    #                   promedio, avance, uinscrito,
+    #                   semestres_cursados, forma_ingreso,
+    #                   carrera, cuenta)
+    # 
+    nuevabase <- simplify_database(mybase, input$generacion, input$examendiag,
+                                   input$promedio, input$avance, input$uinscrito,
+                                   input$semestres_cursados, input$forma_ingreso,
+                                   input$carrera, cuenta)
+    
+    
+    if (nrow(nuevabase) > 0){
+      mysummary <- summary(nuevabase[,"AVANCE"])
+      desvest   <- sd(nuevabase[,"AVANCE"])
+      mysummary <- c(mysummary, desvest)
+      names(mysummary) <- c("Min      ", "25%      ", "Mediana  ", "Media    ", 
+                            "75%      ", "Máx      ", "Desv.Est.")
+      mytext <- ""
+      for (i in 1:length(mysummary)){
+        mytext <- paste(mytext,"\n",names(mysummary)[i], "=", mysummary[i])
+      }
+    } else {
+      mytext <- "NO HAY OBSERVACIONES QUE CUMPLAN ESOS PARÁMETROS"
     }
     print(mytext)
   })
