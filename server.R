@@ -15,22 +15,22 @@ library(stringr)
 shinyServer(function(input, output) {
   
   dataInput <- reactive({
-    # variables_tabular <<- input$variables_table
-    # generacion <<- input$generacion
-    # examendiag <<- input$examendiag
-    # avance     <<- input$avance
-    # uinscrito  <<- input$uinscrito
-    # promedio   <<- input$promedio
-    # semestres_cursados <<- input$semestres_cursados
-    # forma_ingreso <<- input$forma_ingreso
-    # carrera <<- input$carrera
-    # cuenta <<- input$cuenta
-    # variables_stats <<- input$variables_stats
-    # 
-    # nuevabase <- simplify_database(mybase, generacion, examendiag,
-    #                                promedio, avance, uinscrito,
-    #                                semestres_cursados, forma_ingreso,
-    #                                carrera, cuenta)  
+    variables_tabular <<- input$variables_table
+    generacion <<- input$generacion
+    examendiag <<- input$examendiag
+    avance     <<- input$avance
+    uinscrito  <<- input$uinscrito
+    promedio   <<- input$promedio
+    semestres_cursados <<- input$semestres_cursados
+    forma_ingreso <<- input$forma_ingreso
+    carrera <<- input$carrera
+    cuenta <<- input$cuenta
+    variables_stats <<- input$variables_stats
+
+    nuevabase <- simplify_database(mybase, generacion, examendiag,
+                                   promedio, avance, uinscrito,
+                                   semestres_cursados, forma_ingreso,
+                                   carrera, cuenta)
     
     nuevabase <- simplify_database(mybase, input$generacion, input$examendiag,
                                    input$promedio, input$avance, input$uinscrito,
@@ -44,7 +44,11 @@ shinyServer(function(input, output) {
   output$myplot <- renderPlot({
     
     # draw the histogram with the specified number of bins
-    hist(mybase$PROMEDIO, col = 'darkgray', border = 'white')
+    if(length(input$variables_plot) == 0){
+      plot(1,1, main = "AGREGA VARIABLES A GRAFICAR")
+    } else if (length(input$variables_plot) == 1) {
+      grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot)
+    }
     
   })
   

@@ -1,7 +1,8 @@
 #TODO AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
 #TODO POR NÚMERO DE CUENTA ARROJAR TODA LA INFO
 #TODO DISTINGUIR Y CONTAR VARIABLES CATEGÓRICAS
-
+#TODO AGREGAR QUE EL 51 ES ARTÍCULO 51
+#TODO AGREGAR CARRERAS
 #clear all
 rm(list = ls())
 
@@ -14,9 +15,10 @@ library(shiny)
 library(shinyWidgets)
 library(stringr)
 library(DT)
+library(ggplot2)
 
 #Funciones nuestras
-source("r/Graficas.R")
+source("r/grafica_histograma.R")
 source("r/simplify_database.R")
 source("r/statistical_analysis.R")
 
