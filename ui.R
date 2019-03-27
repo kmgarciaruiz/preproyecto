@@ -1,3 +1,7 @@
+#TODO AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
+#TODO POR NÚMERO DE CUENTA ARROJAR TODA LA INFO
+#TODO DISTINGUIR Y CONTAR VARIABLES CATEGÓRICAS
+
 #clear all
 rm(list = ls())
 
@@ -9,16 +13,20 @@ library(readxl)
 library(shiny)
 library(shinyWidgets)
 library(stringr)
+library(DT)
 
 #Funciones nuestras
 source("r/Graficas.R")
-source("r/Reduce_Database.R")
+source("r/simplify_database.R")
+source("r/statistical_analysis.R")
+
+#Data Table options
+options(DT.options = list(pageLength = 5, language = list(search = 'Búsqueda:')))
 
 #Lectura de la base
 mybase <- as.data.frame(read_xlsx("bases/datos_pi_2006_2014_paraKarl.xlsx"))
 
 #Formateo del último semestre inscrito
-#TODO AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
 usem_min <- min(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
 usem_max <- max(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
 mybase[,"ULT_ORD"] <- paste0(substr(mybase[,"ULT_ORD"], 1, 4),"-",
@@ -40,6 +48,13 @@ carrera_opciones   <<- unique(mybase[,"CARRERA"])
 #Opciones de ingreso
 ingreso_opciones   <<- unique(mybase[,"FORMA_INGRESO"])
 
+#Opciones de análisis
+analisis_opciones  <<- colnames(mybase)[-which(colnames(mybase) == "CUENTA")]
+
+#Variables categóricas y continuas
+categorical_vars   <<- c("CARRERA","GENERACION","FORMA_INGRESO","ULT_ORD")
+continuous_vars    <<- c("PROMEDIO","AVANCE","PTOS_EX_DIAG","SEM_CURSADOS")
+
 #Mínimo y máximo de generación
 mingen  <- min(as.numeric(mybase[,"GENERACION"]))
 maxgen  <- max(as.numeric(mybase[,"GENERACION"]))
@@ -56,11 +71,6 @@ maxprom <- max(as.numeric(mybase[,"PROMEDIO"]))
 minsem  <- min(as.numeric(mybase[,"SEM_CURSADOS"]))
 maxsem  <- max(as.numeric(mybase[,"SEM_CURSADOS"]))
 
-#Opciones de variables a graficar
-tchoices <- c("Forma Ingreso", "Carrera", 
-              "Generación", "Examen Diagnóstico", 
-              "Promedio carrera", "Avance (%)", 
-              "Último Inscrito", "Semestres cursados")
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -71,8 +81,8 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       fixedRow(
-        searchInput("cuenta", "Cuenta", value = "", placeholder = "Busca clave de alumno",
-                    btnSearch = NULL, btnReset = NULL, resetValue = "", width = "100%"),
+        searchInput("cuenta", "Cuenta", value = "", placeholder = "NO SIRVE",
+                    btnSearch = NULL, btnReset = "Reset", resetValue = "", width = "100%"),
         selectizeInput('forma_ingreso', 'Forma Ingreso', 
                        choices = ingreso_opciones, multiple = TRUE),
         selectizeInput('carrera', 'Carrera', 
@@ -103,12 +113,12 @@ shinyUI(fluidPage(
                       min = minsem, max = maxsem,
                       value = c(minsem, maxsem), step = 1)
         )),
-        wellPanel(
-          div(style="display:inline-block;width:100%;text-align: center;",
-            actionButton("button", "Calcular", style="color: #fff; background-color: #337ab7;")
-          )
-        ),
-      width = 6),
+        # wellPanel(
+        #   div(style="display:inline-block;width:100%;text-align: center;",
+        #     actionButton("button", "Calcular", style="color: #fff; background-color: #337ab7;")
+        #   )
+        # ),
+      width = 4),
     
     # Show a plot of the generated distribution
     mainPanel(
@@ -116,10 +126,7 @@ shinyUI(fluidPage(
         tabPanel("Gráfica", 
                  wellPanel(
                    selectizeInput('variables_plot', 'Variables a Graficar', 
-                                  choices = c("Forma Ingreso", "Carrera", 
-                                              "Generación", "Examen Diagnóstico", 
-                                              "Promedio carrera", "Avance (%)", 
-                                              "Último Inscrito", "Semestres cursados"), 
+                                  choices = analisis_opciones, 
                                   multiple = TRUE,
                                   options = list(maxItems = 3))
                  ),
@@ -128,24 +135,22 @@ shinyUI(fluidPage(
         tabPanel("Estadística", 
                  wellPanel(
                    selectizeInput('variables_stats', 'Variables a Analizar', 
-                                  choices = c("Forma Ingreso", "Carrera", 
-                                              "Generación", "Examen Diagnóstico", 
-                                              "Promedio carrera", "Avance (%)", 
-                                              "Último Inscrito", "Semestres cursados"), 
-                                  multiple = TRUE)
+                                  choices = analisis_opciones, 
+                                  multiple = TRUE,
+                                  options = list(maxItems = 2))
                  ),
-                 verbatimTextOutput("statistics")
+                 tableOutput("statistics")
                  ), 
         tabPanel("Tabla", 
                  wellPanel(
                    selectizeInput('variables_table', 'Variables a Tabular', 
-                                  choices = tchoices, 
+                                  choices = c(analisis_opciones, "CUENTA"), 
                                   multiple = TRUE)
                  ),
-                 dataTableOutput("mytable")
+                 DT::DTOutput("mytable")
                  )
       ),
-      width = 6
+      width = 8
     )
   )
 ))
