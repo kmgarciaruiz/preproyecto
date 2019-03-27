@@ -45,9 +45,13 @@ shinyServer(function(input, output) {
     
     # draw the histogram with the specified number of bins
     if(length(input$variables_plot) == 0){
-      plot(1,1, main = "AGREGA VARIABLES A GRAFICAR")
+      ggplot(data.frame()) + geom_point() + xlim(-5, 5) + ylim(-5, 5) + 
+        annotate("text", x = 0, y = 0,label = "AGREGUE VARIABLES A GRAFICAR") +
+        theme_void()
     } else if (length(input$variables_plot) == 1) {
       grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot)
+    } else if (length(input$variables_plot) == 2) {
+      grafica_bivariada(dataInput(), input$variables_plot)
     }
     
   })

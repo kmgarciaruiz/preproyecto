@@ -1,8 +1,10 @@
-#TODO AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
+#TODO A VECES AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
 #TODO POR NÚMERO DE CUENTA ARROJAR TODA LA INFO
 #TODO DISTINGUIR Y CONTAR VARIABLES CATEGÓRICAS
 #TODO AGREGAR QUE EL 51 ES ARTÍCULO 51
 #TODO AGREGAR CARRERAS
+#TODO AGREGAR LA OPCIÓN DE TENER 3 GRÁFICAS
+
 #clear all
 rm(list = ls())
 
@@ -21,6 +23,7 @@ library(ggplot2)
 source("r/grafica_histograma.R")
 source("r/simplify_database.R")
 source("r/statistical_analysis.R")
+source("r/grafica_dos.R")
 
 #Data Table options
 options(DT.options = list(pageLength = 5, language = list(search = 'Búsqueda:')))
@@ -33,6 +36,8 @@ usem_min <- min(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
 usem_max <- max(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
 mybase[,"ULT_ORD"] <- paste0(substr(mybase[,"ULT_ORD"], 1, 4),"-",
                              substr(mybase[,"ULT_ORD"], 5, 5))
+
+mybase[,"CARRERA"] <- as.character(mybase[,"CARRERA"])
 
 #Base como global
 mybase <<- mybase
@@ -130,7 +135,7 @@ shinyUI(fluidPage(
                    selectizeInput('variables_plot', 'Variables a Graficar', 
                                   choices = analisis_opciones, 
                                   multiple = TRUE,
-                                  options = list(maxItems = 3))
+                                  options = list(maxItems = 2))
                  ),
                  plotOutput("myplot")
                  ),

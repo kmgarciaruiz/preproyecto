@@ -41,7 +41,7 @@ statistical_analysis <- function(mydata, variables_stats,
       } 
       
       #Check if continuous-categorical combination
-      if (variables_stats[1] %in% continuous_vars){
+      if (variables_stats[1] %in% continuous_vars && variables_stats[2] %in% categorical_vars){
         mysummary <- by(mydata[,variables_stats[1]], mydata[,variables_stats[2]], summary)
         desvest   <- by(mydata[,variables_stats[1]], mydata[,variables_stats[2]], sd)
         mysummary <- data.frame(cbind(do.call(rbind, mysummary), cbind(desvest)))
@@ -54,7 +54,7 @@ statistical_analysis <- function(mydata, variables_stats,
         colnames(mysummary)[2] <- variables_stats[2]
         colnames(mysummary)[3] <- "OBSERVACIONES"
       } else {
-        mysummary <- data.frame(x = "ERROR: VARIABLE NO ENCONTRADA")
+        mysummary <- data.frame(CORRELACION = cor(mydata[,variables_stats[1]], mydata[,variables_stats[2]]))
       }
     }
     

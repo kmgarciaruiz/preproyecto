@@ -4,7 +4,7 @@
 #' misdatos <- data.frame(x = rnorm(100))
 #' grafica_histograma(misdatos)
 
-grafica_histograma <- function(mydata, variables_plot, mytitle = "Histograma", xlabel = "Eje X",
+grafica_histograma <- function(mydata, variables_plot, mytitle = "Análisis", xlabel = "Eje X",
                                categorical_vars = c("CARRERA","GENERACION","FORMA_INGRESO","ULT_ORD"),
                                continuous_vars  = c("PROMEDIO","AVANCE","PTOS_EX_DIAG","SEM_CURSADOS")){
   if(!is.data.frame(mydata)){
@@ -18,9 +18,9 @@ grafica_histograma <- function(mydata, variables_plot, mytitle = "Histograma", x
       ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_bw()
   } else {
     myplot <- ggplot(mydata, aes(x = mydata[,variables_plot])) + 
-      geom_bar(aes(y=..count../sum(..count..)), fill = "deepskyblue3", color = "deepskyblue4") +
-      #geom_line(stat='count') +
-      ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_bw()
+      geom_bar(aes(y=..count.., fill = mydata[,variables_plot]), color = "black") +
+      ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_bw() + 
+      labs(fill=variables_plot) 
   }
   return(myplot)
 }
