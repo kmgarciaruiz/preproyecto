@@ -13,15 +13,19 @@ grafica_histograma <- function(mydata, variables_plot, mytitle = "Análisis", xl
   
   if(variables_plot %in% continuous_vars){
     myplot <- ggplot(mydata, aes(x = mydata[,variables_plot])) + 
-      geom_histogram(aes(y=..density..), fill = "deepskyblue3", color = "deepskyblue4") +
-      geom_density(size = 1) +
-      ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_bw()
+      geom_histogram(aes(y=..density..), fill = "deepskyblue4", color = "black") +
+      geom_density(size = 1.5, color = "tomato3") 
   } else {
     myplot <- ggplot(mydata, aes(x = mydata[,variables_plot])) + 
-      geom_bar(aes(y=..count.., fill = mydata[,variables_plot]), color = "black") +
-      ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_bw() + 
+      geom_bar(aes(y=..count../sum(..count..), fill = mydata[,variables_plot]), color = "black") +
       labs(fill=variables_plot) 
   }
+  
+  myplot <- myplot + ggtitle(mytitle) + xlab(xlabel) + ylab("Frecuencia") + theme_classic() +
+    theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(), 
+          panel.background = element_blank(), plot.background = element_blank(),
+          legend.background = element_blank())
+  
   return(myplot)
 }
 

@@ -1,7 +1,3 @@
-#TODO POR NÚMERO DE CUENTA ARROJAR TODA LA INFO
-#TODO AGREGAR LA OPCIÓN DE TENER 3 GRÁFICAS
-#TODO OPCIÓN DE DESCARGA 
-
 #clear all
 rm(list = ls())
 
@@ -12,9 +8,11 @@ setwd("~/Dropbox/Proyecto Química/Preproyecto")
 library(readxl)
 library(shiny)
 library(shinyWidgets)
+library(shinythemes)
 library(stringr)
 library(DT)
 library(ggplot2)
+library(plotly)
 
 #Funciones nuestras
 source("r/grafica_histograma.R")
@@ -85,15 +83,16 @@ maxsem  <- max(as.numeric(mybase[,"SEM_CURSADOS"]))
 
 
 # Define UI for application that draws a histogram
-shinyUI(fluidPage(
+shinyUI(fluidPage(theme = shinytheme("simplex"),
   
-  titlePanel("Alumnos"),
+  titlePanel("INFORMACIÓN DEL ALUMNADO"),
   
+  div("", style="background-color: black; margin-bottom: 1%; border-radius: 25px; min-height: 5px; width: 100%;"),
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
       fixedRow(
-        searchInput("cuenta", "Cuenta", value = "", placeholder = "NO SIRVE",
+        searchInput("cuenta", "Cuenta", value = "", placeholder = "Indique número de cuenta",
                     btnSearch = NULL, btnReset = "Reset", resetValue = "", width = "100%"),
         selectizeInput('forma_ingreso', 'Forma Ingreso', 
                        choices = ingreso_opciones, multiple = TRUE),
@@ -124,45 +123,61 @@ shinyUI(fluidPage(
           sliderInput("semestres_cursados", "Semestres cursados",
                       min = minsem, max = maxsem,
                       value = c(minsem, maxsem), step = 1)
-        )),
-        # wellPanel(
-        #   div(style="display:inline-block;width:100%;text-align: center;",
-        #     actionButton("button", "Calcular", style="color: #fff; background-color: #337ab7;")
-        #   )
-        # ),
-      width = 4),
+        )), width = 4),
     
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(
+        tabPanel("Tabla", 
+                 wellPanel(
+                   fluidRow(
+                     column(1, 
+                            downloadButton('downloadTable', label = "")
+                     ),
+                     column(11, 
+                            selectizeInput('variables_table', 'Variables a Tabular', 
+                                           choices = c(analisis_opciones, "CUENTA"), 
+                                           multiple = TRUE)
+                     )
+                   )
+                 ),
+                 DT::DTOutput("mytable")
+        ),
         tabPanel("Gráfica", 
                  wellPanel(
-                   selectizeInput('variables_plot', 'Variables a Graficar', 
-                                  choices = analisis_opciones, 
-                                  multiple = TRUE,
-                                  options = list(maxItems = 2))
+                   fluidRow(
+                     column(1, 
+                      downloadButton('downloadPlot', label = "")
+                     ),
+                     column(11,
+                            selectizeInput('variables_plot', 'Variables a Graficar', 
+                                           choices = analisis_opciones, 
+                                           multiple = TRUE,
+                                           options = list(maxItems = 2))
+                     )
+                   )
                  ),
                  plotOutput("myplot")
                  ),
         tabPanel("Estadística", 
                  wellPanel(
-                   selectizeInput('variables_stats', 'Variables a Analizar', 
-                                  choices = analisis_opciones, 
-                                  multiple = TRUE,
-                                  options = list(maxItems = 2))
+                   fluidRow(
+                     column(1, 
+                       downloadButton('downloadStats', label = "")
+                      ),
+                     column(11, 
+                       selectizeInput('variables_stats', 'Variables a Analizar', 
+                                      choices = analisis_opciones, 
+                                      multiple = TRUE,
+                                      options = list(maxItems = 2))
+                     )
+                   )
                  ),
                  tableOutput("statistics")
-                 ), 
-        tabPanel("Tabla", 
-                 wellPanel(
-                   selectizeInput('variables_table', 'Variables a Tabular', 
-                                  choices = c(analisis_opciones, "CUENTA"), 
-                                  multiple = TRUE)
-                 ),
-                 DT::DTOutput("mytable")
                  )
       ),
       width = 8
     )
-  )
+  ),
+  div("", style="background-color: black; margin-bottom: 1%; border-radius: 25px; min-height: 5px; width: 100%;")
 ))

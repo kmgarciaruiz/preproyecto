@@ -1,28 +1,8 @@
 
-library(shiny)
-library(shinyWidgets)
-library(stringr)
-
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   
   dataInput <- reactive({
-    variables_tabular <<- input$variables_table
-    generacion <<- input$generacion
-    examendiag <<- input$examendiag
-    avance     <<- input$avance
-    uinscrito  <<- input$uinscrito
-    promedio   <<- input$promedio
-    semestres_cursados <<- input$semestres_cursados
-    forma_ingreso <<- input$forma_ingreso
-    carrera <<- input$carrera
-    cuenta <<- input$cuenta
-    variables_stats <<- input$variables_stats
-
-    nuevabase <- simplify_database(mybase, generacion, examendiag,
-                                   promedio, avance, uinscrito,
-                                   semestres_cursados, forma_ingreso,
-                                   carrera, cuenta)
     
     nuevabase <- simplify_database(mybase, input$generacion, input$examendiag,
                                    input$promedio, input$avance, input$uinscrito,
@@ -33,25 +13,66 @@ shinyServer(function(input, output) {
     
   })
   
-  output$myplot <- renderPlot({
+  getStats <- reactive({
     
-    # draw the histogram with the specified number of bins
-    if(length(input$variables_plot) == 0){
-      ggplot(data.frame()) + geom_point() + xlim(-5, 5) + ylim(-5, 5) + 
-        annotate("text", x = 0, y = 0,label = "AGREGUE VARIABLES A GRAFICAR") +
-        theme_void()
-    } else if (length(input$variables_plot) == 1) {
-      grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot)
-    } else if (length(input$variables_plot) == 2) {
-      grafica_bivariada(dataInput(), input$variables_plot)
-    }
+    mytablestats <- statistical_analysis(dataInput(), input$variables_stats, categorical_vars, continuous_vars)
+    
+    return(mytablestats)
     
   })
   
+  createPlot <- reactive({
+    
+    # CASO VACÍO (PLACEHOLDER)
+    if(length(input$variables_plot) == 0){
+      
+      myplot <- ggplot(data.frame()) + geom_point() + xlim(-5, 5) + ylim(-5, 5) + 
+        annotate("text", x = 0, y = 0,label = "AGREGUE VARIABLES A GRAFICAR") +
+        theme_void()
+      
+    #CASO UNA VARIABLE SELECCIONADA
+    } else if (length(input$variables_plot) == 1) {
+      myplot <- grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot)
+      
+    #CASO DOS VARIABLES SELECCIONADAS    
+    } else if (length(input$variables_plot) == 2) {
+      myplot <- grafica_bivariada(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot[1], "y", input$variables_plot[2]))
+    }
+    
+    return(myplot)
+    
+  })
+  
+  output$myplot <- renderPlot({
+    
+    createPlot()
+    
+  }, bg="transparent")
+  
+  
+  output$downloadPlot <- downloadHandler(
+    filename = function() { paste('Grafica-',Sys.Date(),'.pdf', sep='', collapse = "") },
+    content = function(file) {
+      ggsave(file, plot = createPlot(), device = "pdf", width = 10, height = 6)
+    }
+  )
+  
+  output$downloadStats <- downloadHandler(
+    filename = function() { paste('Estadistica-', Sys.Date(), '.csv', sep='') },
+    content = function(file) {
+      write.csv(getStats(),file)
+    }
+  )
+  
+  output$downloadTable <- downloadHandler(
+    filename = function() { paste('Tabla-', Sys.Date(), '.csv', sep='') },
+    content = function(file) {
+      write.csv(dataInput(),file)
+    }
+  )
+  
   output$statistics <- renderTable({
-    #mytext <- statistical_analysis(nuevabase, variables_stats)
-    mytablestats <- statistical_analysis(dataInput(), input$variables_stats, categorical_vars, continuous_vars)
-    return(mytablestats)
+    return(getStats())
   })
   
   output$mytable <- DT::renderDataTable({
