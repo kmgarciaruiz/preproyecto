@@ -1,9 +1,6 @@
-#TODO A VECES AGREGA UN SEMESTRE AL ÚLTIMO Y AL PRIMERO
 #TODO POR NÚMERO DE CUENTA ARROJAR TODA LA INFO
-#TODO DISTINGUIR Y CONTAR VARIABLES CATEGÓRICAS
-#TODO AGREGAR QUE EL 51 ES ARTÍCULO 51
-#TODO AGREGAR CARRERAS
 #TODO AGREGAR LA OPCIÓN DE TENER 3 GRÁFICAS
+#TODO OPCIÓN DE DESCARGA 
 
 #clear all
 rm(list = ls())
@@ -23,7 +20,7 @@ library(ggplot2)
 source("r/grafica_histograma.R")
 source("r/simplify_database.R")
 source("r/statistical_analysis.R")
-source("r/grafica_dos.R")
+source("r/grafica_bivariada.R")
 
 #Data Table options
 options(DT.options = list(pageLength = 5, language = list(search = 'Búsqueda:')))
@@ -37,7 +34,15 @@ usem_max <- max(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
 mybase[,"ULT_ORD"] <- paste0(substr(mybase[,"ULT_ORD"], 1, 4),"-",
                              substr(mybase[,"ULT_ORD"], 5, 5))
 
-mybase[,"CARRERA"] <- as.character(mybase[,"CARRERA"])
+#LIMPIEZA DE LA BASE
+mybase[which(mybase[,"CARRERA"] == 21),"CARRERA"] <- "21.- Ing. Química"
+mybase[which(mybase[,"CARRERA"] == 22),"CARRERA"] <- "22.- Ing. Química Metalúrgica"
+mybase[which(mybase[,"CARRERA"] == 23),"CARRERA"] <- "23.- Química"
+mybase[which(mybase[,"CARRERA"] == 24),"CARRERA"] <- "24.- Química Farmacéutico Biológica"
+mybase[which(mybase[,"CARRERA"] == 28),"CARRERA"] <- "28.- Química en Alimentos"
+
+#CAMBIO DE VARIABLE
+mybase[which(mybase[,"FORMA_INGRESO"] == 51) ,"FORMA_INGRESO"] <- "ARTÍCULO 51"
 
 #Base como global
 mybase <<- mybase
