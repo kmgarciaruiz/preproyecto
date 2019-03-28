@@ -12,10 +12,10 @@ library(ggplot2)
 #library(plotly)
 
 #Funciones nuestras
-eval(parse("r/simplify_database.R", encoding="UTF-8"))
-eval(parse("r/grafica_histograma.R", encoding="UTF-8"))
-eval(parse("r/statistical_analysis.R", encoding="UTF-8"))
-eval(parse("r/grafica_bivariada.R", encoding="UTF-8"))
+eval(parse("r/simplify_database.R", encoding="UTF-8"), envir=.GlobalEnv)
+eval(parse("r/grafica_histograma.R", encoding="UTF-8"), envir=.GlobalEnv)
+eval(parse("r/statistical_analysis.R", encoding="UTF-8"), envir=.GlobalEnv)
+eval(parse("r/grafica_bivariada.R", encoding="UTF-8"), envir=.GlobalEnv)
 
 
 #Data Table options
