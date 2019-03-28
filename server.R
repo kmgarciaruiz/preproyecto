@@ -32,11 +32,13 @@ shinyServer(function(input, output) {
       
     #CASO UNA VARIABLE SELECCIONADA
     } else if (length(input$variables_plot) == 1) {
-      myplot <- grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot)
+      myplot <- grafica_histograma(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot), xlabel = input$variables_plot,
+                                   categorical_vars = categorical_vars, continuous_vars = continuous_vars)
       
     #CASO DOS VARIABLES SELECCIONADAS    
     } else if (length(input$variables_plot) == 2) {
-      myplot <- grafica_bivariada(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot[1], "y", input$variables_plot[2]))
+      myplot <- grafica_bivariada(dataInput(), input$variables_plot, paste("ANÁLISIS DE", input$variables_plot[1], "Y", input$variables_plot[2]),
+                                  categorical_vars = categorical_vars, continuous_vars = continuous_vars)
     }
     
     return(myplot)

@@ -1,7 +1,7 @@
 #Selección de las variables sobre las cuales hacer estadística
 statistical_analysis <- function(mydata, variables_stats,
-                                 categorical_vars = c("CARRERA","GENERACION","FORMA_INGRESO","ULT_ORD"),
-                                 continuous_vars  = c("PROMEDIO","AVANCE","PTOS_EX_DIAG","SEM_CURSADOS")
+                                 categorical_vars = c("CARRERA","GENERACION","FORMA_DE_INGRESO","ÚLTIMO_SEMESTRE_ORDINARIO"),
+                                 continuous_vars  = c("PROMEDIO","AVANCE","EXAMEN_DE_DIAGNÓSTICO","SEMESTRES_CURSADOS")
                                  ){
   
   #Checamos que los datos contengan la información solicitada

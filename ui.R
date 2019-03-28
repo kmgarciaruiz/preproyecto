@@ -26,11 +26,17 @@ options(DT.options = list(pageLength = 5, language = list(search = 'Búsqueda:')
 #Lectura de la base
 mybase <- as.data.frame(read_xlsx("bases/datos_pi_2006_2014_paraKarl.xlsx"))
 
+#Change database colnames
+colnames(mybase)[which(colnames(mybase) == "FORMA_INGRESO")] <- "FORMA_DE_INGRESO" 
+colnames(mybase)[which(colnames(mybase) == "PTOS_EX_DIAG")]  <- "EXAMEN_DE_DIAGNÓSTICO"
+colnames(mybase)[which(colnames(mybase) == "ULT_ORD")]       <- "ÚLTIMO_SEMESTRE_ORDINARIO"
+colnames(mybase)[which(colnames(mybase) == "SEM_CURSADOS")]  <- "SEMESTRES_CURSADOS"
+
 #Formateo del último semestre inscrito
-usem_min <- min(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
-usem_max <- max(as.numeric(substr(mybase[,"ULT_ORD"], 1, 4)))
-mybase[,"ULT_ORD"] <- paste0(substr(mybase[,"ULT_ORD"], 1, 4),"-",
-                             substr(mybase[,"ULT_ORD"], 5, 5))
+usem_min <- min(as.numeric(substr(mybase[,"ÚLTIMO_SEMESTRE_ORDINARIO"], 1, 4)))
+usem_max <- max(as.numeric(substr(mybase[,"ÚLTIMO_SEMESTRE_ORDINARIO"], 1, 4)))
+mybase[,"ÚLTIMO_SEMESTRE_ORDINARIO"] <- paste0(substr(mybase[,"ÚLTIMO_SEMESTRE_ORDINARIO"], 1, 4),"-",
+                             substr(mybase[,"ÚLTIMO_SEMESTRE_ORDINARIO"], 5, 5))
 
 #LIMPIEZA DE LA BASE
 mybase[which(mybase[,"CARRERA"] == 21),"CARRERA"] <- "21.- Ing. Química"
@@ -40,7 +46,7 @@ mybase[which(mybase[,"CARRERA"] == 24),"CARRERA"] <- "24.- Química Farmacéutic
 mybase[which(mybase[,"CARRERA"] == 28),"CARRERA"] <- "28.- Química en Alimentos"
 
 #CAMBIO DE VARIABLE
-mybase[which(mybase[,"FORMA_INGRESO"] == 51) ,"FORMA_INGRESO"] <- "ARTÍCULO 51"
+mybase[which(mybase[,"FORMA_DE_INGRESO"] == 51) ,"FORMA_DE_INGRESO"] <- "ARTÍCULO 51"
 
 #Base como global
 mybase <<- mybase
@@ -56,30 +62,30 @@ semestres_opciones <<- semestres_opciones
 carrera_opciones   <<- unique(mybase[,"CARRERA"])
 
 #Opciones de ingreso
-ingreso_opciones   <<- unique(mybase[,"FORMA_INGRESO"])
+ingreso_opciones   <<- unique(mybase[,"FORMA_DE_INGRESO"])
 
 #Opciones de análisis
 analisis_opciones  <<- colnames(mybase)[-which(colnames(mybase) == "CUENTA")]
 
 #Variables categóricas y continuas
-categorical_vars   <<- c("CARRERA","GENERACION","FORMA_INGRESO","ULT_ORD")
-continuous_vars    <<- c("PROMEDIO","AVANCE","PTOS_EX_DIAG","SEM_CURSADOS")
+categorical_vars   <<- c("CARRERA","GENERACION","FORMA_DE_INGRESO","ÚLTIMO_SEMESTRE_ORDINARIO")
+continuous_vars    <<- c("PROMEDIO","AVANCE","EXAMEN_DE_DIAGNÓSTICO","SEMESTRES_CURSADOS")
 
 #Mínimo y máximo de generación
 mingen  <- min(as.numeric(mybase[,"GENERACION"]))
 maxgen  <- max(as.numeric(mybase[,"GENERACION"]))
 
 #Mínimo y máximo de examen diagnóstico
-mindiag <- min(as.numeric(mybase[,"PTOS_EX_DIAG"]))
-maxdiag <- max(as.numeric(mybase[,"PTOS_EX_DIAG"]))
+mindiag <- min(as.numeric(mybase[,"EXAMEN_DE_DIAGNÓSTICO"]))
+maxdiag <- max(as.numeric(mybase[,"EXAMEN_DE_DIAGNÓSTICO"]))
 
 #Mínimo y máximo de promedio
 minprom <- min(as.numeric(mybase[,"PROMEDIO"]))
 maxprom <- max(as.numeric(mybase[,"PROMEDIO"]))
 
 #Mínimo y máximo de semestres cursados
-minsem  <- min(as.numeric(mybase[,"SEM_CURSADOS"]))
-maxsem  <- max(as.numeric(mybase[,"SEM_CURSADOS"]))
+minsem  <- min(as.numeric(mybase[,"SEMESTRES_CURSADOS"]))
+maxsem  <- max(as.numeric(mybase[,"SEMESTRES_CURSADOS"]))
 
 
 # Define UI for application that draws a histogram

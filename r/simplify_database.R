@@ -45,16 +45,16 @@ simplify_database <- function(mydata,
   #Por otro lado, si no nos dieron cuenta buscamos por los otros factores
   params       <- which(mydata[,"GENERACION"] >= generacion[1] & 
                         mydata[,"GENERACION"] <= generacion[2] & 
-                        mydata[,"PTOS_EX_DIAG"] >= examendiag[1] & 
-                        mydata[,"PTOS_EX_DIAG"] <= examendiag[2] &
+                        mydata[,"EXAMEN_DE_DIAGNÓSTICO"] >= examendiag[1] & 
+                        mydata[,"EXAMEN_DE_DIAGNÓSTICO"] <= examendiag[2] &
                         mydata[,"PROMEDIO"] >= promedio[1]   & 
                         mydata[,"PROMEDIO"] <= promedio[2] & 
                         mydata[,"AVANCE"] >= avance[1] & 
                         mydata[,"AVANCE"] <= avance[2] &
-                        mydata[,"SEM_CURSADOS"] >= semestres_cursados[1] & 
-                        mydata[,"SEM_CURSADOS"] <= semestres_cursados[2] & 
-                        mydata[,"ULT_ORD"] %in% uinscrito & 
-                        mydata[,"FORMA_INGRESO"] %in% forma_ingreso &
+                        mydata[,"SEMESTRES_CURSADOS"] >= semestres_cursados[1] & 
+                        mydata[,"SEMESTRES_CURSADOS"] <= semestres_cursados[2] & 
+                        mydata[,"ÚLTIMO_SEMESTRE_ORDINARIO"] %in% uinscrito & 
+                        mydata[,"FORMA_DE_INGRESO"] %in% forma_ingreso &
                         mydata[,"CARRERA"] %in% carrera)
   
 
