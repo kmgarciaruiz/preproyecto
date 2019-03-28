@@ -12,10 +12,11 @@ library(ggplot2)
 #library(plotly)
 
 #Funciones nuestras
-source("r/grafica_histograma.R")
-source("r/simplify_database.R")
-source("r/statistical_analysis.R")
-source("r/grafica_bivariada.R")
+eval(parse("r/simplify_database.R", encoding="UTF-8"))
+eval(parse("r/grafica_histograma.R", encoding="UTF-8"))
+eval(parse("r/statistical_analysis.R", encoding="UTF-8"))
+eval(parse("r/grafica_bivariada.R", encoding="UTF-8"))
+
 
 #Data Table options
 options(DT.options = list(pageLength = 5, language = list(search = 'Búsqueda:')))

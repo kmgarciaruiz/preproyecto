@@ -4,6 +4,22 @@ shinyServer(function(input, output) {
   
   dataInput <- reactive({
     
+    generacion <<- input$generacion
+    examendiag <<- input$examendiag
+    promedio   <<- input$promedio
+    avance     <<- input$avance
+    uinscrito  <<- input$uinscrito
+    semestres  <<- input$semestres_cursados
+    ingreso    <<- input$forma_ingreso
+    carrera    <<- input$carrera
+    cuenta     <<- input$cuenta
+
+    
+    nuevabase <- simplify_database(mybase, generacion, examendiag,
+                                   promedio, avance, uinscrito,
+                                   semestres, ingreso,
+                                   carrera, cuenta)    
+    
     nuevabase <- simplify_database(mybase, input$generacion, input$examendiag,
                                    input$promedio, input$avance, input$uinscrito,
                                    input$semestres_cursados, input$forma_ingreso,
