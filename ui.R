@@ -1,9 +1,6 @@
 #clear all
 rm(list = ls())
 
-#Directorio de rodrigo
-setwd("~/Dropbox/Proyecto Química/Preproyecto")
-
 #Librerías de R
 library(readxl)
 library(shiny)
@@ -12,7 +9,7 @@ library(shinythemes)
 library(stringr)
 library(DT)
 library(ggplot2)
-library(plotly)
+#library(plotly)
 
 #Funciones nuestras
 source("r/grafica_histograma.R")
